@@ -26,7 +26,7 @@ export function migrationReport(program: ts.Program, excludeSpec = false) {
             ts.isPropertyAccessExpression(node.parent) &&
             ts.isCallExpression(node.parent.parent)
         ) {
-          if(node.parent.parent.arguments.some((x) => ts.isObjectLiteralExpression(x))){
+          if(node.parent.parent.arguments.some((x) => ts.isObjectLiteralExpression(x)) || node.parent.parent.arguments.length === 1){
             result.totalNonDeprecated++;
           }else{
             result.totalDeprecated++;
