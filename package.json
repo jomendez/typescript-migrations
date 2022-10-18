@@ -1,0 +1,39 @@
+{
+    "name": "migrations",
+    "main": "dist/cli.js",
+    "bin": "dist/cli.js",
+    "typings": "dist/cli.d.ts",
+    "repository": "https://github.com/jomendez/migrations",
+    "description": "Template for code migration",
+    "author": "Jose Mendez <jomendezdev@gmail.com>",
+    "license": "MIT",
+    "scripts": {
+        "build": "rm -rf dist && tsc",
+        "test": "jest",
+        "lint": "tslint -p .",
+        "lint.fix": "tslint -p . --fix",
+        "publish": "rm -rf dist && tsc && cp package.json dist/package.json",
+        "pretty-write": "prettier --write \"**/*.{ts,scss}\""
+    },
+    "files": [
+        "dist"
+    ],
+    "dependencies": {
+        "commander": "^9.4.0",
+        "chalk": "^2.4.2"
+    },
+    "engines": {
+        "node": ">= 12.0.0"
+    },
+    "devDependencies": {
+        "@types/jest": "^23.3.9",
+        "@types/node": "^18.7.14",
+        "jest": "^23.6.0",
+        "prettier": "^1.15.2",
+        "rimraf": "^2.6.2",
+        "ts-jest": "^23.10.5",
+        "ts-node": "^10.9.1",
+        "tslint": "^5.11.0",
+        "typescript": "^4.8.2"
+    }
+}
