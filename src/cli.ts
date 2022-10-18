@@ -16,8 +16,10 @@ function deprecatedSubscribeHandler(tsConfigPath: string, opts: ICliOptions) {
     console.log(`Total non deprecated subscribes: ${result.totalNonDeprecated}`);
     console.log(`Total deprecated subscribes: ${result.totalDeprecated}`);
     console.log(`Total files affected: ${Object.keys(result.transform).length}`);
-    if(!opts.dryRun){
-      transformFile(result.transform);
+    if (!opts.dryRun) {
+        transformFile(result.transform);
+    } else {
+        console.log(chalk.green('No changes were applied (ran with --dry-run flag)'));
     }
 }
 
