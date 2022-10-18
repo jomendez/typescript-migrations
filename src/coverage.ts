@@ -20,10 +20,13 @@ export function migrationReport(program: ts.Program, excludeSpec = false) {
     function visit(node: ts.Node) {
         if (
             ts.isIdentifier(node) &&
-            node.escapedText === 'subscribe' &&
-            ts.isCallExpression(node.parent)
+            node.escapedText.toString() === 'subscribe' &&
+            node.parent &&
+            node.parent.parent &&
+            ts.isPropertyAccessExpression(node.parent) &&
+            ts.isCallExpression(node.parent.parent)
         ) {
-          if(node.parent.arguments.some((x) => ts.isObjectLiteralExpression(x))){
+          if(node.parent.parent.arguments.some((x) => ts.isObjectLiteralExpression(x))){
             result.totalNonDeprecated++;
           }else{
             result.totalDeprecated++;
