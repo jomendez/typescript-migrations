@@ -30,6 +30,7 @@ export function migrationReport(program: ts.Program, excludeSpec = false) {
             result.totalNonDeprecated++;
           }else{
             result.totalDeprecated++;
+            report(node, node.escapedText.toString());
           }
         }
         node.forEachChild(visit);
