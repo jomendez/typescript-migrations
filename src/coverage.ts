@@ -13,7 +13,7 @@ export function migrationReport(program: ts.Program, excludeSpec = false) {
     function report(node: ts.Node, message: string) {
         const { line, character } = sourceFileGlobal.getLineAndCharacterOfPosition(node.getStart());
         console.log(
-            chalk.red(`Unknown type found at: ${sourceFileGlobal.fileName} (${line + 1},${character + 1}): ${message}`),
+            chalk.red(`Deprecated subscribe found at: ${sourceFileGlobal.fileName} (${line + 1},${character + 1}): ${message}`),
         );
     }
 
