@@ -1,19 +1,23 @@
 import chalk from 'chalk';
 import * as ts from 'typescript';
 
-export function migrationReport(program: ts.Program, excludeSpec = false) {
+export function migration(program: ts.Program, excludeSpec = false) {
     let sourceFileGlobal: ts.SourceFile;
     const checker = program.getTypeChecker();
 
     const result = {
-        totalNonDeprecated: 0,
         totalDeprecated: 0,
+        totalNonDeprecated: 0,
+        transform: {},
     };
 
     function report(node: ts.Node, message: string) {
         const { line, character } = sourceFileGlobal.getLineAndCharacterOfPosition(node.getStart());
         console.log(
-            chalk.red(`Deprecated subscribe found at: ${sourceFileGlobal.fileName} (${line + 1},${character + 1}): ${message}`),
+            chalk.red(
+                `Deprecated subscribe found at: ${sourceFileGlobal.fileName} (${line + 1},${character +
+                    1}): ${message}`,
+            ),
         );
     }
 
@@ -26,14 +30,47 @@ export function migrationReport(program: ts.Program, excludeSpec = false) {
             ts.isPropertyAccessExpression(node.parent) &&
             ts.isCallExpression(node.parent.parent)
         ) {
-          if(node.parent.parent.arguments.some((x) => ts.isObjectLiteralExpression(x)) || node.parent.parent.arguments.length === 1){
-            result.totalNonDeprecated++;
-          }else{
-            result.totalDeprecated++;
-            report(node, node.escapedText.toString());
-          }
+            const callExpression = node.parent.parent;
+            if (
+                callExpression.arguments.some((x) => ts.isObjectLiteralExpression(x)) ||
+                callExpression.arguments.length === 1
+            ) {
+                result.totalNonDeprecated++;
+            } else {
+                result.totalDeprecated++;
+                report(node, node.escapedText.toString());
+                prepareTransform(
+                    callExpression.arguments,
+                    sourceFileGlobal.getFullText(),
+                    callExpression.getFullText(),
+                    node.parent.getFullText(),
+                    sourceFileGlobal.fileName,
+                );
+            }
         }
         node.forEachChild(visit);
+    }
+
+    function prepareTransform(
+        nodeArguments: ts.NodeArray<ts.Expression>,
+        fullFileText: string,
+        currentDeprecatedCode: string,
+        codeToBeCompleted: string,
+        filename: string,
+    ): void {
+        let newArgs = '';
+        if (nodeArguments.length === 2) {
+            newArgs = `({ next: ${nodeArguments[0].getFullText()}, error: ${nodeArguments[1].getFullText()}})`;
+        } else if (nodeArguments.length === 3) {
+            newArgs = `({ next: ${nodeArguments[0].getFullText()}, error: ${nodeArguments[1].getFullText()}, complete: ${nodeArguments[2].getFullText()}})`;
+        }
+        const transformedCode = codeToBeCompleted + newArgs;
+
+        if (result.transform[filename]) {
+            result.transform[filename] = result.transform[filename].replace(currentDeprecatedCode, transformedCode);
+        } else {
+            result.transform[filename] = fullFileText.replace(currentDeprecatedCode, transformedCode);
+        }
     }
 
     for (const sourceFile of program.getSourceFiles()) {

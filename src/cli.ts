@@ -3,7 +3,8 @@
 import chalk from 'chalk';
 import { Command } from 'commander';
 import { dirname } from 'path';
-import { getProgram, migrationReport } from './coverage';
+import { getProgram, migration } from './transformer';
+import { transformFile } from './writeToFile';
 const program = new Command();
 
 interface ICliOptions {
@@ -13,12 +14,10 @@ interface ICliOptions {
 }
 
 function deprecatedSubscribeHandler(tsConfigPath: string, opts: ICliOptions) {
-    const coverage = migrationReport(
-        getProgram({ tsConfig: tsConfigPath, rootDir: dirname(tsConfigPath) })!,
-        opts.excludeSpec,
-    );
-    console.log(`Total non deprecated subscribes: ${coverage.totalNonDeprecated}`);
-    console.log(`Total deprecated subscribes: ${coverage.totalDeprecated}`);
+    const result = migration(getProgram({ tsConfig: tsConfigPath, rootDir: dirname(tsConfigPath) })!, opts.excludeSpec);
+    console.log(`Total non deprecated subscribes: ${result.totalNonDeprecated}`);
+    console.log(`Total deprecated subscribes: ${result.totalDeprecated}`);
+    transformFile(result.transform);
 }
 
 program
