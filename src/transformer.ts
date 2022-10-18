@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import * as ts from 'typescript';
 
-export function migration(program: ts.Program, excludeSpec = false) {
+export function migration(program: ts.Program) {
     let sourceFileGlobal: ts.SourceFile;
     const checker = program.getTypeChecker();
 
