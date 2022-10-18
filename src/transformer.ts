@@ -33,7 +33,7 @@ export function migration(program: ts.Program, excludeSpec = false) {
             const callExpression = node.parent.parent;
             if (
                 callExpression.arguments.some((x) => ts.isObjectLiteralExpression(x)) ||
-                callExpression.arguments.length === 1
+                callExpression.arguments.length <= 1
             ) {
                 result.totalNonDeprecated++;
             } else {
