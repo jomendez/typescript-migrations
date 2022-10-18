@@ -90,8 +90,7 @@ export function migration(program: ts.Program, excludeSpec = false) {
         if (
             !sourceFile.isDeclarationFile &&
             !sourceFile.fileName.includes('/node_modules/') &&
-            !sourceFile.fileName.includes('/dist/') &&
-            !(sourceFile.fileName.includes('.spec.ts') && excludeSpec)
+            !sourceFile.fileName.includes('/dist/')
         ) {
             sourceFileGlobal = sourceFile;
             visit(sourceFile);
