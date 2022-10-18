@@ -6,7 +6,8 @@ export function migrationReport(program: ts.Program, excludeSpec = false) {
     const checker = program.getTypeChecker();
 
     const result = {
-        total: 0,
+        totalNonDeprecated: 0,
+        totalDeprecated: 0,
     };
 
     function report(node: ts.Node, message: string) {
@@ -20,10 +21,13 @@ export function migrationReport(program: ts.Program, excludeSpec = false) {
         if (
             ts.isIdentifier(node) &&
             node.escapedText === 'subscribe' &&
-            ts.isCallExpression(node.parent) &&
-            node.parent.arguments.some((x) => ts.isObjectLiteralExpression(x))
+            ts.isCallExpression(node.parent)
         ) {
-            result.total++;
+          if(node.parent.arguments.some((x) => ts.isObjectLiteralExpression(x))){
+            result.totalNonDeprecated++;
+          }else{
+            result.totalDeprecated++;
+          }
         }
         node.forEachChild(visit);
     }

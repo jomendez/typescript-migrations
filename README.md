@@ -1,5 +1,5 @@
 # Migrations
-Template for code migration"
+Template for code migrations"
 
 
 Clone the repo and install dependencies
@@ -15,8 +15,8 @@ npm run build
 npm link
 ```
 
-To run a migration you can run `migration subscribe <path/to/your/project/tsconfig.json>`
+To run a migrations you can run `migrations subscribe <path/to/your/project/tsconfig.json>`
 
 ```bash
-migration subscribe tsconfig.json
+migrations subscribe tsconfig.json
 ```

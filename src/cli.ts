@@ -17,7 +17,8 @@ function deprecatedSubscribeHandler(tsConfigPath: string, opts: ICliOptions) {
         getProgram({ tsConfig: tsConfigPath, rootDir: dirname(tsConfigPath) })!,
         opts.excludeSpec,
     );
-    console.log(`Total of deprecated subscribes: ${coverage.total}`);
+    console.log(`Total non deprecated subscribes: ${coverage.totalNonDeprecated}`);
+    console.log(`Total deprecated subscribes: ${coverage.totalDeprecated}`);
 }
 
 program
