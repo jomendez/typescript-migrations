@@ -17,6 +17,7 @@ function deprecatedSubscribeHandler(tsConfigPath: string, opts: ICliOptions) {
     const result = migration(getProgram({ tsConfig: tsConfigPath, rootDir: dirname(tsConfigPath) })!, opts.excludeSpec);
     console.log(`Total non deprecated subscribes: ${result.totalNonDeprecated}`);
     console.log(`Total deprecated subscribes: ${result.totalDeprecated}`);
+    console.log(`Total files affected: ${Object.keys(result.transform).length}`);
     transformFile(result.transform);
 }
 

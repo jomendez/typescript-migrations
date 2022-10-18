@@ -51,6 +51,13 @@ export function migration(program: ts.Program, excludeSpec = false) {
         node.forEachChild(visit);
     }
 
+    function cleanExpression(expression: string) {
+        if (expression[0] === '\n') {
+            return expression.slice(1, expression.length);
+        }
+        return expression;
+    }
+
     function prepareTransform(
         nodeArguments: ts.NodeArray<ts.Expression>,
         fullFileText: string,
@@ -59,10 +66,15 @@ export function migration(program: ts.Program, excludeSpec = false) {
         filename: string,
     ): void {
         let newArgs = '';
+
         if (nodeArguments.length === 2) {
-            newArgs = `({ next: ${nodeArguments[0].getFullText()}, error: ${nodeArguments[1].getFullText()}})`;
+            newArgs = `({ next: ${cleanExpression(nodeArguments[0].getFullText())}, error: ${cleanExpression(
+                nodeArguments[1].getFullText(),
+            )}})`;
         } else if (nodeArguments.length === 3) {
-            newArgs = `({ next: ${nodeArguments[0].getFullText()}, error: ${nodeArguments[1].getFullText()}, complete: ${nodeArguments[2].getFullText()}})`;
+            newArgs = `({ next: ${cleanExpression(nodeArguments[0].getFullText())}, error: ${cleanExpression(
+                nodeArguments[1].getFullText(),
+            )}, complete: ${cleanExpression(nodeArguments[2].getFullText())}})`;
         }
         const transformedCode = codeToBeCompleted + newArgs;
 
