@@ -52,10 +52,11 @@ export function migration(program: ts.Program, excludeSpec = false) {
     }
 
     function cleanExpression(expression: string) {
+        let cleanResult = expression;
         if (expression[0] === '\n') {
-            return expression.slice(1, expression.length);
+            cleanResult = expression.slice(1, expression.length);
         }
-        return expression;
+        return cleanResult.trimStart();
     }
 
     function prepareTransform(
