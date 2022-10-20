@@ -30,6 +30,8 @@ export function migration(program: ts.Program) {
             ts.isPropertyAccessExpression(node.parent) &&
             ts.isCallExpression(node.parent.parent)
         ) {
+            const aux = checker.typeToString(checker.getTypeAtLocation(node));
+            console.log('***********', aux);
             const callExpression = node.parent.parent;
             if (
                 callExpression.arguments.some((x) => ts.isObjectLiteralExpression(x)) ||
@@ -135,12 +137,4 @@ export function getProgram(options: ICompilerOptions) {
         program = ts.createProgram(parsed.fileNames, parsed.options, options.tsCompilerHost);
     }
     return program;
-}
-
-function aggregateTypes(type: string, aggregatedTypes: Record<string, number>) {
-    if (aggregatedTypes[type]) {
-        aggregatedTypes[type]++;
-    } else {
-        aggregatedTypes[type] = 1;
-    }
 }
