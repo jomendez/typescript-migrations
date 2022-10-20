@@ -24,14 +24,12 @@ export function migration(program: ts.Program) {
     function visit(node: ts.Node) {
         if (
             ts.isIdentifier(node) &&
-            node.escapedText.toString() === 'subscribe' &&
+            (node.escapedText.toString() === 'subscribe' || node.escapedText.toString() === 'tap') &&
             node.parent &&
             node.parent.parent &&
             ts.isPropertyAccessExpression(node.parent) &&
             ts.isCallExpression(node.parent.parent)
         ) {
-            const aux = checker.typeToString(checker.getTypeAtLocation(node));
-            console.log('***********', aux);
             const callExpression = node.parent.parent;
             if (
                 callExpression.arguments.some((x) => ts.isObjectLiteralExpression(x)) ||
