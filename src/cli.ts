@@ -1,33 +1,14 @@
 #!/usr/bin/env node
-
-import chalk from 'chalk';
 import { Command } from 'commander';
-import { dirname } from 'path';
-import { getProgram, migration } from './transformer';
-import { transformFile } from './writeToFile';
+import { deprecatedRxjsHandler } from './handlers';
+
 const program = new Command();
 
-interface ICliOptions {
-    dryRun?: boolean;
-}
-
-function deprecatedSubscribeHandler(tsConfigPath: string, opts: ICliOptions) {
-    const result = migration(getProgram({ tsConfig: tsConfigPath, rootDir: dirname(tsConfigPath) })!);
-    console.log(`Total non deprecated subscribes: ${result.totalNonDeprecated}`);
-    console.log(`Total deprecated subscribes: ${result.totalDeprecated}`);
-    console.log(`Total files affected: ${Object.keys(result.transform).length}`);
-    if (!opts.dryRun) {
-        transformFile(result.transform);
-    } else {
-        console.log(chalk.green('No changes were applied (ran with --dry-run flag)'));
-    }
-}
-
 program
-    .command('subscribe <tsconfig.json>')
-    .description('Calculate number of deprecated subscribe for your project')
-    .option('-d, --dry-run', 'Exclude spec files from report ')
-    .action(deprecatedSubscribeHandler);
+    .command('rxjs <tsconfig.json>')
+    .description('Migrate deprecated rxjs functions for your project')
+    .option('-d, --dry-run', 'Run command without making any permanent change')
+    .action(deprecatedRxjsHandler);
 
 program.action(() => {
     program.help();

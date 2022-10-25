@@ -1,9 +1,11 @@
 import chalk from 'chalk';
 import * as ts from 'typescript';
+import { isSubscribeNode, isTabNode } from './helpers';
+import { ICompilerOptions } from './types';
 
 export function migration(program: ts.Program) {
     let sourceFileGlobal: ts.SourceFile;
-    const checker = program.getTypeChecker();
+    // const checker = program.getTypeChecker();
 
     const result = {
         totalDeprecated: 0,
@@ -22,15 +24,8 @@ export function migration(program: ts.Program) {
     }
 
     function visit(node: ts.Node) {
-        if (
-            ts.isIdentifier(node) &&
-            (node.escapedText.toString() === 'subscribe' || node.escapedText.toString() === 'tap') &&
-            node.parent &&
-            node.parent.parent &&
-            ts.isPropertyAccessExpression(node.parent) &&
-            ts.isCallExpression(node.parent.parent)
-        ) {
-            const callExpression = node.parent.parent;
+        if (isSubscribeNode(node) || isTabNode(node)) {
+            const callExpression = node.parent.parent as ts.CallExpression;
             if (
                 callExpression.arguments.some((x) => ts.isObjectLiteralExpression(x)) ||
                 callExpression.arguments.length <= 1
@@ -38,7 +33,7 @@ export function migration(program: ts.Program) {
                 result.totalNonDeprecated++;
             } else {
                 result.totalDeprecated++;
-                report(node, node.escapedText.toString());
+                report(node, (node as ts.Identifier).escapedText.toString());
                 prepareTransform(
                     callExpression.arguments,
                     sourceFileGlobal.getFullText(),
@@ -98,23 +93,6 @@ export function migration(program: ts.Program) {
     }
 
     return result;
-}
-
-export interface ICompilerOptions {
-    /**
-     * If given, all the file paths in the collected type info will be resolved relative to this directory.
-     */
-    rootDir?: string;
-
-    /**
-     * Path to your project's tsconfig file
-     */
-    tsConfig?: string;
-
-    // You probably never need to touch these two - they are used by the integration tests to setup
-    // a virtual file system for TS:
-    tsConfigHost?: ts.ParseConfigHost;
-    tsCompilerHost?: ts.CompilerHost;
 }
 
 export function getProgram(options: ICompilerOptions) {
